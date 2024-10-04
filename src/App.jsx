@@ -18,6 +18,7 @@ import Navigation from "./components/Navigation";
 import ContactsPage from "./page/ContactsPage";
 import HomePage from "./page/HomePage"; 
 import store from "./redux/store"
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -80,6 +81,13 @@ const App = () => {
         <Route path="/login" element={<LogIn handleLogIn={handleLogIn} />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <Toaster
+        position="bottom-center"
+        reverseOrder={false}
+        toastOptions={{
+          duration: 7000, 
+        }}
+      />
     </div>
   );
 };

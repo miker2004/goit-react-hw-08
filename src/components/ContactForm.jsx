@@ -2,6 +2,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from 'yup';
 import { nanoid } from 'nanoid';
 import { TextField, Button, Box, Typography } from '@mui/material';
+import toast from "react-hot-toast";
 
 const ContactForm = ({ addContact }) => {
   const FeedbackSchema = Yup.object().shape({
@@ -23,6 +24,7 @@ const ContactForm = ({ addContact }) => {
 
     console.log('New Contact:', newContact);
     addContact(newContact);
+    toast.success("Contact add successfully!");
     resetForm();
   };
 

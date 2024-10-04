@@ -3,7 +3,6 @@ import axios from "axios";
 
 axios.defaults.baseURL = "https://connections-api.goit.global"; 
 
-
 export const fetchContacts = createAsyncThunk(
   "contacts/fetchAll",
   async (_, { getState, rejectWithValue }) => {
@@ -25,15 +24,25 @@ export const fetchContacts = createAsyncThunk(
   }
 );
 
-
 export const addContact = createAsyncThunk(
   "contacts/addContact",
-  async (newContact, thunkAPI) => {
+  async (newContact, { getState, rejectWithValue }) => {
+    const state = getState();
+    const token = state.auth?.token;
+
+    if (!token) {
+      return rejectWithValue("User not authenticated"); 
+    }
+
     try {
-      const response = await axios.post("/contacts", newContact);
+      const response = await axios.post("/contacts", newContact, {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
+      });
       return response.data;
     } catch (e) {
-      return thunkAPI.rejectWithValue(e.message);
+      return rejectWithValue(e.response?.data || e.message); 
     }
   }
 );
@@ -41,8 +50,15 @@ export const addContact = createAsyncThunk(
 export const deleteContact = createAsyncThunk(
   "contacts/deleteContact",
   async (contactId, thunkAPI) => {
+    const state = thunkAPI.getState();
+    const token = state.auth?.token; 
+
     try {
-      await axios.delete(`/contacts/${contactId}`);
+      await axios.delete(`/contacts/${contactId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
+      });
       return contactId;
     } catch (e) {
       return thunkAPI.rejectWithValue(e.message);
@@ -69,7 +85,6 @@ export const signupUser = createAsyncThunk(
     }
   }
 );
-
 
 export const logInUser = createAsyncThunk(
   "users/login",
@@ -108,6 +123,28 @@ export const getUserInfo = createAsyncThunk(
       return response.data;
     } catch (e) {
       return thunkAPI.rejectWithValue(e.message);
+    }
+  }
+);
+export const updateContact = createAsyncThunk(
+  "contacts/updateContact",
+  async (contact, { getState, rejectWithValue }) => {
+    const state = getState();
+    const token = state.auth?.token; 
+
+    if (!token) {
+      return rejectWithValue("User not authenticated");
+    }
+
+    try {
+      const response = await axios.patch(`/contacts/${contact.id}`, contact, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data; 
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
   }
 );

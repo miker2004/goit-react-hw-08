@@ -2,7 +2,7 @@ import { Button } from '@mui/material';
 import ConfirmationModal from './ConfirmationModal';
 import { useState } from 'react';
 
-const ContactList = ({ contacts = [], onDelete }) => { 
+const ContactList = ({ contacts, onDelete }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedContactId, setSelectedContactId] = useState(null);
 
@@ -25,18 +25,14 @@ const ContactList = ({ contacts = [], onDelete }) => {
 
   return (
     <div>
-      {contacts.length > 0 ? (
-        contacts.map(contact => (
-          <div key={contact.id}>
-            <span>{contact.name}</span>
-            <Button variant="contained" color="error" onClick={() => handleDeleteClick(contact.id)}>
-              Delete
-            </Button>
-          </div>
-        ))
-      ) : (
-        <p>No contacts available.</p> 
-      )}
+      {contacts.map(contact => (
+        <div key={contact.id}>
+          <span>{contact.name}</span>
+          <Button variant="contained" color="error" onClick={() => handleDeleteClick(contact.id)}>
+            Delete
+          </Button>
+        </div>
+      ))}
       <ConfirmationModal
         open={modalOpen}
         onClose={() => setModalOpen(false)} 

@@ -8,15 +8,18 @@ const SearchBox = () => {
 
   return (
     <Box sx={{ marginBottom: 2 }}>
-      <Typography variant="h6">Find contacts by name</Typography>
-      <Formik initialValues={{ searchTerm: '' }}>
+      <Typography variant="h6">Find contacts</Typography>
+      <Formik
+        initialValues={{ searchTerm: '' }}
+        onSubmit={() => {}}
+      >
         {({ values, handleChange }) => (
           <Form>
             <Field
               as={TextField}
               fullWidth
               variant="outlined"
-              placeholder="Search contacts"
+              placeholder="Search contacts by name or number"
               name="searchTerm"
               value={values.searchTerm}
               onChange={(event) => {
