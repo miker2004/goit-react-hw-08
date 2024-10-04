@@ -1,6 +1,7 @@
-import { useState } from "react";
 import { Box, Button, FormControl, FormLabel, Stack, styled, TextField, Typography, Card as MuiCard } from "@mui/material";
 import { Link } from "react-router-dom";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -33,64 +34,17 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
   }),
 }));
 
-const SignIn = () => {
-  const [emailError, setEmailError] = useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = useState('');
-  const [passwordError, setPasswordError] = useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
-  const [nameError, setNameError] = useState(false);
-  const [nameErrorMessage, setNameErrorMessage] = useState('');
+const validationSchema = Yup.object({
+  name: Yup.string().required('Name is required'),
+  email: Yup.string()
+    .email('Please enter a valid email address')
+    .required('Email is required'),
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters long')
+    .required('Password is required'),
+});
 
-  const validateInputs = () => {
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-    const name = document.getElementById('name');
-
-    let isValid = true;
-
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
-      isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage('');
-    }
-
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage('');
-    }
-
-    if (!name.value || name.value.length < 1) {
-      setNameError(true);
-      setNameErrorMessage('Name is required.');
-      isValid = false;
-    } else {
-      setNameError(false);
-      setNameErrorMessage('');
-    }
-
-    return isValid;
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (validateInputs()) {
-      const data = new FormData(event.currentTarget);
-      console.log({
-        name: data.get('name'),
-        lastName: data.get('lastName'),
-        email: data.get('email'),
-        password: data.get('password'),
-      });
-    }
-  };
-
+const SignIn = ({ handleSignUp }) => {
   return (
     <SignUpContainer direction="column" justifyContent="space-between">
       <Stack
@@ -108,70 +62,77 @@ const SignIn = () => {
           >
             Register
           </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+
+          <Formik
+            initialValues={{ name: '', email: '', password: '' }}
+            validationSchema={validationSchema}
+            onSubmit={(values, { setSubmitting }) => {
+              handleSignUp(values); 
+              setSubmitting(false);
+            }}
           >
-            <FormControl>
-              <FormLabel htmlFor="name">Full name</FormLabel>
-              <TextField
-                autoComplete="name"
-                name="name"
-                required
-                fullWidth
-                id="name"
-                placeholder="Jon Snow"
-                error={nameError}
-                helperText={nameErrorMessage}
-                color={nameError ? 'error' : 'primary'}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="email">Email</FormLabel>
-              <TextField
-                required
-                fullWidth
-                id="email"
-                placeholder="your@email.com"
-                name="email"
-                autoComplete="email"
-                variant="outlined"
-                error={emailError}
-                helperText={emailErrorMessage}
-                color={emailError ? 'error' : 'primary'}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="password">Password</FormLabel>
-              <TextField
-                required
-                fullWidth
-                name="password"
-                placeholder="••••••"
-                type="password"
-                id="password"
-                autoComplete="new-password"
-                variant="outlined"
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                color={passwordError ? 'error' : 'primary'}
-              />
-            </FormControl>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-            >
-              Sign up
-            </Button>
-            <Typography sx={{ textAlign: 'center' }}>
-              Already have an account?{' '}
-              <span>
-                <Link to="/login">LogIn</Link>
-              </span>
-            </Typography>
-          </Box>
+            {({ errors, touched, isSubmitting }) => (
+              <Form>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <FormControl>
+                    <FormLabel htmlFor="name">Full name</FormLabel>
+                    <Field
+                      as={TextField}
+                      fullWidth
+                      id="name"
+                      name="name"
+                      placeholder="Jon Snow"
+                      autoComplete="name"
+                      error={touched.name && Boolean(errors.name)}
+                      helperText={<ErrorMessage name="name" />}
+                    />
+                  </FormControl>
+
+                  <FormControl>
+                    <FormLabel htmlFor="email">Email</FormLabel>
+                    <Field
+                      as={TextField}
+                      fullWidth
+                      id="email"
+                      name="email"
+                      placeholder="your@email.com"
+                      autoComplete="email"
+                      variant="outlined"
+                      error={touched.email && Boolean(errors.email)}
+                      helperText={<ErrorMessage name="email" />}
+                    />
+                  </FormControl>
+
+                  <FormControl>
+                    <FormLabel htmlFor="password">Password</FormLabel>
+                    <Field
+                      as={TextField}
+                      fullWidth
+                      id="password"
+                      name="password"
+                      placeholder="••••••"
+                      type="password"
+                      autoComplete="new-password"
+                      variant="outlined"
+                      error={touched.password && Boolean(errors.password)}
+                      helperText={<ErrorMessage name="password" />}
+                    />
+                  </FormControl>
+
+                  <Button type="submit" fullWidth variant="contained" disabled={isSubmitting}>
+                    Sign up
+                  </Button>
+                </Box>
+              </Form>
+            )}
+          </Formik>
+
+          <Typography sx={{ textAlign: 'center' }}>
+            Already have an account?{' '}
+            <span>
+              <Link to="/login">Log In</Link>
+            </span>
+          </Typography>
         </Card>
       </Stack>
     </SignUpContainer>

@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { Box, Button, FormControl, FormLabel, Stack, styled, TextField, Typography, Card as MuiCard } from "@mui/material";
 import { Link } from "react-router-dom";
-
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -35,56 +35,18 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 }));
 
 
-const LogIn = () => {
-  const [emailError, setEmailError] = useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = useState('');
-  const [passwordError, setPasswordError] = useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+const validationSchema = Yup.object({
+  email: Yup.string()
+    .email('Please enter a valid email address')
+    .required('Email is required'),
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters long')
+    .required('Password is required'),
+});
 
-
-  const validateInputs = () => {
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-
-    let isValid = true;
-
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
-      isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage('');
-    }
-
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage('');
-    }
-
-
-    return isValid;
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (validateInputs()) {
-      const data = new FormData(event.currentTarget);
-      console.log({
-        name: data.get('name'),
-        lastName: data.get('lastName'),
-        email: data.get('email'),
-        password: data.get('password'),
-      });
-    }
-  };
-
+const LogIn = ({ handleLogIn }) => {
   return (
-   <SignUpContainer direction="column" justifyContent="space-between">
+    <SignUpContainer direction="column" justifyContent="space-between">
       <Stack
         sx={{
           justifyContent: 'center',
@@ -100,59 +62,64 @@ const LogIn = () => {
           >
             Log In
           </Typography>
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-    >
-      <FormControl>
-        <FormLabel htmlFor="email">Email</FormLabel>
-        <TextField
-          required
-          fullWidth
-          id="email"
-          placeholder="your@email.com"
-          name="email"
-          autoComplete="email"
-          variant="outlined"
-          error={emailError}
-          helperText={emailErrorMessage}
-          color={emailError ? 'error' : 'primary'}
-        />
-      </FormControl>
-      <FormControl>
-        <FormLabel htmlFor="password">Password</FormLabel>
-        <TextField
-          required
-          fullWidth
-          name="password"
-          placeholder="••••••"
-          type="password"
-          id="password"
-          autoComplete="new-password"
-          variant="outlined"
-          error={passwordError}
-          helperText={passwordErrorMessage}
-          color={passwordError ? 'error' : 'primary'}
-        />
-      </FormControl>
-      <Button
-        type="submit"
-        fullWidth
-        variant="contained"
-      >
-        LOGIN
-      </Button>
-      <Typography sx={{ textAlign: 'center' }}>
-        Do not have a account{' '}
-        <span>
-          <Link to="/signin">
-            Sign Up
-          </Link>
-        </span>
-      </Typography>
-    </Box>
-    </Card>
+
+          <Formik
+            initialValues={{ email: '', password: '' }}
+            validationSchema={validationSchema}
+            onSubmit={(values, { setSubmitting }) => {
+              handleLogIn(values); 
+              setSubmitting(false);
+            }}
+          >
+            {({ errors, touched, isSubmitting }) => (
+              <Form>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <FormControl>
+                    <FormLabel htmlFor="email">Email</FormLabel>
+                    <Field
+                      as={TextField}
+                      fullWidth
+                      id="email"
+                      name="email"
+                      placeholder="your@email.com"
+                      autoComplete="email"
+                      variant="outlined"
+                      error={touched.email && Boolean(errors.email)}
+                      helperText={<ErrorMessage name="email" />}
+                    />
+                  </FormControl>
+
+                  <FormControl>
+                    <FormLabel htmlFor="password">Password</FormLabel>
+                    <Field
+                      as={TextField}
+                      fullWidth
+                      id="password"
+                      name="password"
+                      placeholder="••••••"
+                      type="password"
+                      autoComplete="new-password"
+                      variant="outlined"
+                      error={touched.password && Boolean(errors.password)}
+                      helperText={<ErrorMessage name="password" />}
+                    />
+                  </FormControl>
+
+                  <Button type="submit" fullWidth variant="contained" disabled={isSubmitting}>
+                    LOGIN
+                  </Button>
+                </Box>
+              </Form>
+            )}
+          </Formik>
+
+          <Typography sx={{ textAlign: 'center' }}>
+            Do not have an account{' '}
+            <span>
+              <Link to="/register">Sign Up</Link>
+            </span>
+          </Typography>
+        </Card>
       </Stack>
     </SignUpContainer>
   );

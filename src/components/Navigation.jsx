@@ -14,9 +14,9 @@ function useRouteMatch(patterns) {
   return null;
 }
 
-const Navigation = () => {
-  const routeMatch = useRouteMatch(['/', '/contacts', '/register', '/login']); // Adjusted to match route names
-  const currentTab = routeMatch?.pattern?.path;
+const Navigation = ({ isAuthenticated, userName, onLogout }) => {
+  const routeMatch = useRouteMatch(isAuthenticated ? ['/contacts', '/'] : ['/login', '/register']);
+  const currentTab = routeMatch?.pattern?.path || "/"; 
 
   return (
     <Tabs value={currentTab} indicatorColor="primary" textColor="primary">
@@ -27,27 +27,44 @@ const Navigation = () => {
         to="/"
         sx={{ textTransform: 'none' }}  
       />
-      <Tab
-        label="Contacts"
-        value="/contacts"
-        component={NavLink}
-        to="/contacts"
-        sx={{ textTransform: 'none' }}
-      />
-      <Tab
-        label="Register"
-        value="/register"
-        component={NavLink}
-        to="/register"
-        sx={{ textTransform: 'none' }}
-      />
-      <Tab
-        label="Login"
-        value="/login"
-        component={NavLink}
-        to="/login"
-        sx={{ textTransform: 'none' }}
-      />
+      {isAuthenticated ? (
+        [
+          <Tab
+            label="Contacts"
+            value="/contacts"
+            component={NavLink}
+            to="/contacts"
+            sx={{ textTransform: 'none' }}
+            key="contacts"
+          />,
+          <span key="username">{userName}</span>, 
+          <Tab
+            label="Logout"
+            onClick={onLogout} 
+            sx={{ textTransform: 'none' }}
+            key="logout" 
+          />
+        ]
+      ) : (
+        [
+          <Tab
+            label="Register"
+            value="/register"
+            component={NavLink}
+            to="/register"
+            sx={{ textTransform: 'none' }}
+            key="register" 
+          />,
+          <Tab
+            label="Login"
+            value="/login"
+            component={NavLink}
+            to="/login"
+            sx={{ textTransform: 'none' }}
+            key="login" 
+          />
+        ]
+      )}
     </Tabs>
   );
 };

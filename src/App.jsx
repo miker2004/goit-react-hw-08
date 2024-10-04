@@ -1,9 +1,9 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { fetchContacts, addContact, deleteContact } from './redux/operations';
+import { fetchContacts, addContact, deleteContact, logInUser, logOutUser, signupUser } from './redux/operations';
 import './App.css';
 import SignIn from "./components/SignIn";
-import { CssBaseline } from "@mui/material";
+import { CssBaseline, CircularProgress, Typography } from "@mui/material";
 import LogIn from "./components/LogIn";
 import { Route, Routes } from "react-router-dom";
 import NotFound from "./components/NotFound";
@@ -13,41 +13,54 @@ import HomePage from "./page/HomePage";
 
 const App = () => {
   const dispatch = useDispatch();
-
   const { items: contacts, isLoading, error } = useSelector((state) => state.contacts);
+  const user = useSelector((state) => state.user); 
 
   useEffect(() => {
-    dispatch(fetchContacts());
-  }, [dispatch]);
-
-  const handleAddContact = (newContact) => {
-    const duplicate = contacts.some(contact =>
-      contact.name.toLowerCase() === newContact.name.toLowerCase()
-    );
-    if (duplicate) {
-      alert(`${newContact.name} is already in contacts.`);
-    } else {
-      dispatch(addContact(newContact));
+    if (user) {
+      dispatch(fetchContacts());
     }
+  }, [dispatch, user]);
+
+  const handleLogOut = () => {
+    dispatch(logOutUser());
+  };
+
+  const handleSignUp = (userData) => {
+    dispatch(signupUser(userData)); 
+  };
+
+  const handleLogIn = (userData) => {
+    dispatch(logInUser(userData)); 
+  };
+
+  const handleAddContact = (contact) => {
+    dispatch(addContact(contact)); 
   };
 
   const handleDeleteContact = (contactId) => {
-    dispatch(deleteContact(contactId));
+    dispatch(deleteContact(contactId)); 
   };
 
   return (
     <div>
       <CssBaseline />
-      <Navigation />
+      <Navigation 
+        isAuthenticated={!!user} 
+        userName={user?.name} 
+        onLogout={handleLogOut} 
+      />
+      {isLoading && <CircularProgress />} 
+      {error && <Typography color="error">{error}</Typography>} 
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route
-          path="/contacts"
-          element={<ContactsPage handleAddContact={handleAddContact} handleDeleteContact={handleDeleteContact} contacts={contacts} />}
-        />
-        <Route path="/register" element={<SignIn />} />
-        <Route path="/login" element={<LogIn />} />
-        <Route path="*" element={<NotFound />} />
+      <Route path="/" element={<HomePage />} />
+      <Route
+        path="/contacts"
+        element={<ContactsPage handleAddContact={handleAddContact} handleDeleteContact={handleDeleteContact} contacts={contacts} />}
+      />
+      <Route path="/register" element={<SignIn handleSignUp={handleSignUp}/>} />
+      <Route path="/login" element={<LogIn handleLogIn={handleLogIn}/>} />
+      <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );

@@ -28,7 +28,7 @@ const HomePage = () => {
         variant="body1"
         sx={{ fontSize: 'clamp(1rem, 5vw, 1.5rem)' }}
       >
-        If you want to create your own phonebook, this is the perfect site for you! To use my awesome app, you must <NavLink to="/signin">sign up</NavLink>, or if you already have an account, use the Login option in the navigation bar.
+        If you want to create your own phonebook, this is the perfect site for you! To use my awesome app, you must <NavLink to="/register">sign up</NavLink>, or if you already have an account, use the Login option in the navigation bar.
       </Typography>
     </Box>
   );
