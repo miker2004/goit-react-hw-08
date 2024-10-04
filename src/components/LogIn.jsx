@@ -1,7 +1,9 @@
 import { Box, Button, FormControl, FormLabel, Stack, styled, TextField, Typography, Card as MuiCard } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { useDispatch } from "react-redux";
+import { logInUser } from "../redux/operations"; // Correct import
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -16,10 +18,6 @@ const Card = styled(MuiCard)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
     width: '450px',
   },
-  ...theme.applyStyles('light', {
-    boxShadow:
-      'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
-  }),
 }));
 
 const SignUpContainer = styled(Stack)(({ theme }) => ({
@@ -28,12 +26,7 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
   backgroundImage:
     'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
   backgroundRepeat: 'no-repeat',
-  ...theme.applyStyles('dark', {
-    backgroundImage:
-      'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
-  }),
 }));
-
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -44,7 +37,16 @@ const validationSchema = Yup.object({
     .required('Password is required'),
 });
 
-const LogIn = ({ handleLogIn }) => {
+const LogIn = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleSubmit = (values) => {
+    dispatch(logInUser(values)).then(() => { // Use logInUser here
+      navigate("/contacts"); 
+    });
+  };
+
   return (
     <SignUpContainer direction="column" justifyContent="space-between">
       <Stack
@@ -67,7 +69,7 @@ const LogIn = ({ handleLogIn }) => {
             initialValues={{ email: '', password: '' }}
             validationSchema={validationSchema}
             onSubmit={(values, { setSubmitting }) => {
-              handleLogIn(values); 
+              handleSubmit(values); // Call the handleSubmit function here
               setSubmitting(false);
             }}
           >

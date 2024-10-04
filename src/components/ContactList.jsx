@@ -1,5 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import Contact from "./Contact";
+import { useSelector } from "react-redux";
 
 const ContactList = ({ contacts, deleteContact }) => {
   const filter = useSelector((state) => state.filters.name);

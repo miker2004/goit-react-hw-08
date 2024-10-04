@@ -52,11 +52,19 @@ export const deleteContact = createAsyncThunk(
 
 export const signupUser = createAsyncThunk(
   "users/signup",
-  async (userData, thunkAPI) => { 
+  async (userData, thunkAPI) => {
     try {
-      const response = await axios.post('/users/signup', userData);
+      console.log("Rejestracja - wysyłane dane:", userData); 
+      const response = await axios.post("/users/signup", userData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Rejestracja - odpowiedź serwera:", response.data); 
       return response.data;
     } catch (e) {
+      console.error("Signup Error Full Response:", e.response); 
+      console.log("Signup Error Message:", e.message); 
       return thunkAPI.rejectWithValue(e.response?.data || e.message);
     }
   }
@@ -65,27 +73,32 @@ export const signupUser = createAsyncThunk(
 
 export const logInUser = createAsyncThunk(
   "users/login",
-  async (credentials, thunkAPI) => { 
+  async (credentials, thunkAPI) => {
     try {
-      const response = await axios.post('/users/login', credentials); 
+      console.log("Logowanie - wysyłane dane:", credentials); 
+      const response = await axios.post("/users/login", credentials, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Logowanie - odpowiedź serwera:", response.data); 
       return response.data;
     } catch (e) {
-      return thunkAPI.rejectWithValue(e.message);
+      console.error("Login Error Full Response:", e.response); 
+      console.log("Login Error Message:", e.message); 
+      return thunkAPI.rejectWithValue(e.response?.data || e.message);
     }
   }
 );
 
-export const logOutUser = createAsyncThunk(
-  "users/logout",
-  async (_, thunkAPI) => {
-    try {
-      const response = await axios.post('/users/logout');
-      return response.data;
-    } catch (e) {
-      return thunkAPI.rejectWithValue(e.message);
-    }
+export const logOutUser = createAsyncThunk('auth/logOutUser', async (_, { rejectWithValue }) => {
+  try {
+    await axios.post('/api/logout'); 
+    return true; 
+  } catch (error) {
+    return rejectWithValue(error.response.data.message);  
   }
-);
+});
 
 export const getUserInfo = createAsyncThunk(
   "users/current",
