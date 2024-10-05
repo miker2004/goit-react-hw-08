@@ -78,7 +78,6 @@ const SignIn = ({ handleSignUp }) => {
                     <FormLabel htmlFor="name">Full name</FormLabel>
                     <Field
                       as={TextField}
-                      fullWidth
                       id="name"
                       name="name"
                       placeholder="Jon Snow"
@@ -92,7 +91,6 @@ const SignIn = ({ handleSignUp }) => {
                     <FormLabel htmlFor="email">Email</FormLabel>
                     <Field
                       as={TextField}
-                      fullWidth
                       id="email"
                       name="email"
                       placeholder="your@email.com"
@@ -107,7 +105,6 @@ const SignIn = ({ handleSignUp }) => {
                     <FormLabel htmlFor="password">Password</FormLabel>
                     <Field
                       as={TextField}
-                      fullWidth
                       id="password"
                       name="password"
                       placeholder="••••••"
@@ -119,7 +116,7 @@ const SignIn = ({ handleSignUp }) => {
                     />
                   </FormControl>
 
-                  <Button type="submit" fullWidth variant="contained" disabled={isSubmitting}>
+                  <Button type="submit" variant="contained" disabled={isSubmitting}>
                     Sign up
                   </Button>
                 </Box>

@@ -34,7 +34,7 @@ const Navigation = ({ onLogout }) => {
   }, [isAuthenticated, routeMatch]); 
 
   return (
-    <Tabs value={currentTab} indicatorColor="primary" textColor="primary">
+    <Tabs value={currentTab} indicatorColor="primary" color="primary">
       <Box
         sx={{
           display: 'flex',

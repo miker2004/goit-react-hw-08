@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
-import { logInUser } from "../redux/operations"; // Correct import
+import { logInUser } from "../redux/operations"; 
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -42,7 +42,7 @@ const LogIn = () => {
   const navigate = useNavigate();
 
   const handleSubmit = (values) => {
-    dispatch(logInUser(values)).then(() => { // Use logInUser here
+    dispatch(logInUser(values)).then(() => {
       navigate("/contacts"); 
     });
   };
@@ -69,7 +69,7 @@ const LogIn = () => {
             initialValues={{ email: '', password: '' }}
             validationSchema={validationSchema}
             onSubmit={(values, { setSubmitting }) => {
-              handleSubmit(values); // Call the handleSubmit function here
+              handleSubmit(values); 
               setSubmitting(false);
             }}
           >
@@ -80,7 +80,6 @@ const LogIn = () => {
                     <FormLabel htmlFor="email">Email</FormLabel>
                     <Field
                       as={TextField}
-                      fullWidth
                       id="email"
                       name="email"
                       placeholder="your@email.com"
@@ -95,7 +94,6 @@ const LogIn = () => {
                     <FormLabel htmlFor="password">Password</FormLabel>
                     <Field
                       as={TextField}
-                      fullWidth
                       id="password"
                       name="password"
                       placeholder="••••••"
@@ -107,7 +105,7 @@ const LogIn = () => {
                     />
                   </FormControl>
 
-                  <Button type="submit" fullWidth variant="contained" disabled={isSubmitting}>
+                  <Button type="submit" variant="contained" disabled={isSubmitting}>
                     LOGIN
                   </Button>
                 </Box>

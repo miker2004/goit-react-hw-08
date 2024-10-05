@@ -41,19 +41,19 @@ const EditContactForm = ({ open, contact, onClose, onConfirm }) => {
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
+          fullWidth
             name="name"
             label="Name"
             variant="outlined"
-            fullWidth
             margin="normal"
             value={updatedContact.name}
             onChange={handleChange}
           />
           <TextField
+            fullWidth
             name="number"
             label="Phone Number"
             variant="outlined"
-            fullWidth
             margin="normal"
             value={updatedContact.number}
             onChange={handleChange}

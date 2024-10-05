@@ -106,12 +106,23 @@ export const logInUser = createAsyncThunk(
   }
 );
 
-export const logOutUser = createAsyncThunk('auth/logOutUser', async (_, { rejectWithValue }) => {
+export const logOutUser = createAsyncThunk('auth/logOutUser', async (_, { getState, rejectWithValue }) => {
+  const state = getState();
+  const token = state.auth?.token;
+
+  if (!token) {
+    return rejectWithValue("No token found, unable to log out");
+  }
   try {
-    await axios.post('/api/logout'); 
-    return true; 
+    await axios.post('/users/logout', null, {
+      headers: {
+        Authorization: `Bearer ${token}` 
+      },
+    });
+    return true;
   } catch (error) {
-    return rejectWithValue(error.response.data.message);  
+    console.error("Logout Error Response:", error.response);
+    return rejectWithValue(error.response?.data?.message || error.message);
   }
 });
 

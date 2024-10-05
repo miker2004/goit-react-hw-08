@@ -17,7 +17,6 @@ const SearchBox = () => {
           <Form>
             <Field
               as={TextField}
-              fullWidth
               variant="outlined"
               placeholder="Search contacts by name or number"
               name="searchTerm"
