@@ -126,6 +126,7 @@ export const getUserInfo = createAsyncThunk(
     }
   }
 );
+
 export const updateContact = createAsyncThunk(
   "contacts/updateContact",
   async (contact, { getState, rejectWithValue }) => {
@@ -137,14 +138,18 @@ export const updateContact = createAsyncThunk(
     }
 
     try {
-      const response = await axios.patch(`/contacts/${contact.id}`, contact, {
+      const response = await axios.patch(`/contacts/${contact.id}`, {
+        name: contact.name,
+        number: contact.number,
+      }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       return response.data; 
     } catch (error) {
-      return rejectWithValue(error.message);
+      console.error("Update contact error:", error.response?.data || error.message);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );

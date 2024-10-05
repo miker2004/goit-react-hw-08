@@ -1,45 +1,24 @@
-import { Button } from '@mui/material';
-import ConfirmationModal from './ConfirmationModal';
-import { useState } from 'react';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 
-const ContactList = ({ contacts, onDelete }) => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedContactId, setSelectedContactId] = useState(null);
-
-  const handleDeleteClick = (contactId) => {
-    setSelectedContactId(contactId);
-    setModalOpen(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    try {
-      await onDelete(selectedContactId); 
-      console.log("Contact deleted successfully");
-    } catch (error) {
-      console.error("Error deleting contact:", error);
-    } finally {
-      setModalOpen(false);
-      setSelectedContactId(null); 
-    }
-  };
-
+const ConfirmationModal = ({ open, onClose, onConfirm, message }) => {
   return (
-    <div>
-      {contacts.map(contact => (
-        <div key={contact.id}>
-          <span>{contact.name}</span>
-          <Button variant="contained" color="error" onClick={() => handleDeleteClick(contact.id)}>
-            Delete
-          </Button>
-        </div>
-      ))}
-      <ConfirmationModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)} 
-        onConfirm={handleDeleteConfirm} 
-      />
-    </div>
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Confirm Deletion</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          {message}
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="primary">
+          Cancel
+        </Button>
+        <Button onClick={onConfirm} color="error">
+          Confirm
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
-export default ContactList;
+export default ConfirmationModal;

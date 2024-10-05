@@ -1,6 +1,7 @@
 import { Tab, Tabs, Typography, Button, Box } from "@mui/material";
 import { matchPath, useLocation, NavLink } from "react-router-dom";
 import { useSelector } from 'react-redux';
+import { useEffect, useState } from "react";
 
 function useRouteMatch(patterns) {
   const { pathname } = useLocation();
@@ -18,11 +19,19 @@ const Navigation = ({ onLogout }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const userName = useSelector((state) => state.auth.user?.name);
   
+  const [currentTab, setCurrentTab] = useState('/');
+
   const routeMatch = useRouteMatch(
     isAuthenticated ? ['/contacts'] : ['/', '/login', '/register']
   );
 
-  const currentTab = routeMatch?.pattern?.path || (isAuthenticated ? '/contacts' : '/');
+  useEffect(() => {
+    if (routeMatch) {
+      setCurrentTab(routeMatch.pattern.path);
+    } else {
+      setCurrentTab(isAuthenticated ? '/contacts' : '/');
+    }
+  }, [isAuthenticated, routeMatch]); 
 
   return (
     <Tabs value={currentTab} indicatorColor="primary" textColor="primary">

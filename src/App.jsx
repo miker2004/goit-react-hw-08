@@ -19,6 +19,8 @@ import ContactsPage from "./page/ContactsPage";
 import HomePage from "./page/HomePage"; 
 import store from "./redux/store"
 import { Toaster } from "react-hot-toast";
+import EditContactForm from "./components/EditContactForm";
+import { clearAuthState } from "./redux/authSlice";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -36,6 +38,7 @@ const App = () => {
     dispatch(logOutUser())
       .then(() => {
         console.log('Logged out. Current state:', store.getState().auth);
+        dispatch(clearAuthState()); 
         navigate("/");
       })
       .catch((error) => {
@@ -73,12 +76,21 @@ const App = () => {
       {error && <Typography color="error">{error}</Typography>} 
       <Routes>
         <Route path="/" element={<HomePage />} />
+
         <Route
           path="/contacts"
-          element={<ContactsPage handleAddContact={handleAddContact} handleDeleteContact={handleDeleteContact} contacts={contacts} />}
+          element={<ContactsPage 
+            handleAddContact={handleAddContact} 
+            handleDeleteContact={handleDeleteContact} 
+            contacts={contacts} />}
         />
-        <Route path="/register" element={<SignIn handleSignUp={handleSignUp} />} />
-        <Route path="/login" element={<LogIn handleLogIn={handleLogIn} />} />
+
+        <Route path="/register" element={<SignIn 
+        handleSignUp={handleSignUp} />} />
+
+        <Route path="/login" element={<LogIn 
+        handleLogIn={handleLogIn} />} />
+
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Toaster

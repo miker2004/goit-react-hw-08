@@ -1,62 +1,71 @@
-import { useState } from 'react';
-import EditContactForm from './EditContactForm';
-import { toast } from 'react-hot-toast';
+import { Box, Button, Modal, Typography, TextField } from "@mui/material";
+import { useState } from "react";
 
-const ParentComponent = ({ contacts }) => {
-  const [selectedContact, setSelectedContact] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
+const EditContactForm = ({ open, contact, onClose, onConfirm }) => {
+  const [updatedContact, setUpdatedContact] = useState(contact);
 
-  const handleEditClick = (contact) => {
-    setSelectedContact(contact);
-    setModalOpen(true);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUpdatedContact({
+      ...updatedContact,
+      [name]: value,
+    });
   };
 
-  const handleUpdateContact = async (updatedContact) => {
-    try {
-      const response = await fetch(`/contacts/${updatedContact.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer yourAuthToken`, 
-        },
-        body: JSON.stringify({
-          name: updatedContact.name,
-          number: updatedContact.number,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update contact');
-      }
-
-      toast.success("Contact updated successfully!", { duration: 7000 });
-    } catch (error) {
-      console.error("Error updating contact:", error);
-      toast.error("Failed to update contact.", { duration: 7000 });
-    } finally {
-      setModalOpen(false);
-      setSelectedContact(null); 
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Updating contact with data:", updatedContact); 
+    onConfirm(updatedContact); 
   };
 
   return (
-    <div>
-      {contacts.map(contact => (
-        <div key={contact.id}>
-          <span>{contact.name}</span>
-          <button onClick={() => handleEditClick(contact)}>Edit</button>
-        </div>
-      ))}
-      {selectedContact && (
-        <EditContactForm
-          contact={selectedContact}
-          onSave={handleUpdateContact} 
-          open={modalOpen}
-          onClose={() => setModalOpen(false)} 
-        />
-      )}
-    </div>
+    <Modal
+      open={open}
+      onClose={onClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 400,
+          bgcolor: 'background.paper',
+          border: '2px solid #000',
+          boxShadow: 24,
+          p: 4,
+      }}>
+        <Typography id="modal-modal-title" variant="h6" component="h2">
+          Edit Contact
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            name="name"
+            label="Name"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={updatedContact.name}
+            onChange={handleChange}
+          />
+          <TextField
+            name="number"
+            label="Phone Number"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={updatedContact.number}
+            onChange={handleChange}
+          />
+          <Button type="submit" variant="contained" color="primary">
+            Submit
+          </Button>
+        </form>
+      </Box>
+    </Modal>
   );
 };
 
-export default ParentComponent;
+
+export default EditContactForm;
